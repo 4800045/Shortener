@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form th:method="POST" th:action="@{/shorten}">
+		<label for="url"></label>
+		<input type="text" id="url">
+		<input type="submit" value="Generate">
+	
+	</form>
+
+</body>
+</html>
