@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 import com.Shortener.models.Person;
 
 
-@Component
 public class PersonDetails implements UserDetails{
     
     private final Person person;
     
-    @Autowired
     public PersonDetails(Person person) {
 	this.person = person;
     }

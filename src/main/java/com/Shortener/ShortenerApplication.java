@@ -3,7 +3,7 @@ package com.Shortener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.Shortener")
 public class ShortenerApplication {
 
 	public static void main(String[] args) {
