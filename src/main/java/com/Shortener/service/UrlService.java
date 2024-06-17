@@ -1,5 +1,6 @@
 package com.Shortener.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +29,56 @@ public class UrlService {
     @Transactional
     public void save(String longUrl, String shortUrl, Person person) {
 	
-	UsersUrl usersUrl = new UsersUrl();
+	Optional<UsersUrl> usersUrl = urlRepository.findByShortUrl(shortUrl);
 	
-	usersUrl.setLongUrl(longUrl);
-	usersUrl.setShortUrl(shortUrl);
-	usersUrl.setPerson(person);
 	
-	urlRepository.save(usersUrl);
+	if (usersUrl.isPresent()) {
+	    
+	    return;
+	}
+	
+	UsersUrl url = new UsersUrl();
+	
+	url.setLongUrl(longUrl);
+	url.setShortUrl(shortUrl);
+	url.setPerson(person);
+	
+	urlRepository.save(url);
+    }
+    
+    @Transactional
+    public void save(String longUrl, String shortUrl) {
+	
+	
+	Optional<UsersUrl> usersUrl = urlRepository.findByShortUrl(shortUrl);
+	
+	if (usersUrl.isPresent()) {
+	    
+	    return;
+	}
+	
+	UsersUrl url = new UsersUrl();
+	
+	url.setLongUrl(longUrl);
+	url.setShortUrl(shortUrl);
+	
+	urlRepository.save(url);
     }
     
     public Optional<UsersUrl> findByShortUrl(String shortUrl) {
 	return urlRepository.findByShortUrl(shortUrl);
     }
     
-    public Optional<ExpiredUrl> findByLongUrl(String longUrl) {
+    public Optional<UsersUrl> findByLongUrl(String longUrl) {
+	return urlRepository.findByLongUrl(longUrl);
+    }
+    
+    public Optional<ExpiredUrl> findByLongUrlInExpired(String longUrl) {
 	return expiredUrlRepository.findByLongUrl(longUrl);
+    }
+    
+    public List<UsersUrl> urlListForPerson(int id) {
+	return urlRepository.findByPersonId(id);
     }
     
     @Transactional
@@ -64,6 +100,21 @@ public class UrlService {
 	
 	expiredUrlRepository.save(expiredUrl);
     }
+    
+    @Transactional
+    public void deleteUrlFromUserPage(String shortUrl) {
+	Optional<UsersUrl> url = urlRepository.findByShortUrl(shortUrl);
+	
+	saveToExpired(url.get());
+	
+	long urlId = url.get().getId();
+	
+	urlRepository.deleteById(urlId);
+	
+	
+	
+    }
+    
     
     
     

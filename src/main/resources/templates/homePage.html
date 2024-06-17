@@ -5,8 +5,30 @@
 <title>Insert title here</title>
 </head>
 <body>
-asdasdasd
+	
+	<div th:if="${urlList != null}">
+		<div th:each="url : ${urlList}">
+		<span th:text="'Original URL: ' + ${url.longUrl} "></span>
+		
+		<br/>
+		<span th:text="'Token: ' + ${url.shortUrl}"></span>
+		<br/>
+		
+		<form th:method="POST" th:action="@{/deleteToken}">
+			<input type="hidden" name="url" th:value="${url.shortUrl}">
+			<input type="submit" value="Delete token">
+		</form>
+	
+		</div>
+		
+	</div>
+	
+	
+
+	<hr/>
 	<form th:method="POST" th:action="@{/shorten}">
+		<span><b>Shortener</b></span>
+		<br/>
 		<label for="url">Enter URL: </label>
 		<input type="text" id="url" name="url">
 		<input type="submit" value="Generate">

@@ -3,6 +3,7 @@ package com.Shortener.service;
 import org.springframework.stereotype.Service;
 
 import com.Shortener.models.ExpiredUrl;
+import com.Shortener.models.UsersUrl;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,8 @@ public class RedisService {
     
     public String shortenUrl(String longUrl, long timeout) {
 	
-	Optional<ExpiredUrl> expiredUrl = urlService.findByLongUrl(longUrl);
+	Optional<ExpiredUrl> expiredUrl = urlService.findByLongUrlInExpired(longUrl);
+	Optional<UsersUrl> usersUrl = urlService.findByShortUrl(longUrl);
 	
 	if (expiredUrl.isPresent()) {
 	    redisTemplate.opsForValue().set(expiredUrl.get().getShortUrl(), expiredUrl.get().getLongUrl(), timeout, TimeUnit.SECONDS);
@@ -40,6 +42,10 @@ public class RedisService {
 	    urlService.deleteFromExpired(expiredUrl.get());
 	    
 	    return expiredUrl.get().getShortUrl();
+	}
+	
+	else if (usersUrl.isPresent()) {
+	    return usersUrl.get().getShortUrl();
 	}
 	
 	String shortUrl = generateShortUrl(longUrl);
@@ -51,6 +57,11 @@ public class RedisService {
     
     public String getUrl(String url) {
 	return redisTemplate.opsForValue().get(url);
+    }
+    
+    public void deleteFromRedis(String key) {
+	redisTemplate.delete(key);
+	
     }
     
     
