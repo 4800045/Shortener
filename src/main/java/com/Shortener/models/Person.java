@@ -22,6 +22,9 @@ public class Person {
     @Column(name = "username")
     private String username;
     
+    @Column(name = "email")
+    private String email;
+    
     @Column(name = "password")
     private String password;
     
@@ -31,9 +34,10 @@ public class Person {
     
     public Person() {}
 
-    public Person(String username, String password) {
+    public Person(String username, String password, String email) {
 	this.username = username;
 	this.password = password;
+	this.email = email;
     }
 
     public String getUsername() {
@@ -67,6 +71,17 @@ public class Person {
     public void setUrlList(List<UsersUrl> urlList) {
         this.urlList = urlList;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    
+    
     
     
     

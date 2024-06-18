@@ -30,11 +30,11 @@ public class PersonController {
 	return "registration";
     }
     
-    @PostMapping("/registration")
-    public String registration(@ModelAttribute("person") Person person) {
-	personService.save(person);
-	
-	return "redirect:/login";
-    }
+//    @PostMapping("/registration")
+//    public String registration(@ModelAttribute("person") Person person) {
+//	personService.save(person);
+//	
+//	return "redirect:/login";
+//    }
     
 }

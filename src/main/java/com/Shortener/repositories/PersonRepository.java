@@ -10,4 +10,6 @@ import com.Shortener.models.Person;
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer>{
     public Optional<Person> findByUsername(String username);
+    
+    public Optional<Person> findByEmail(String email);
 }
