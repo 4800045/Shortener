@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,12 +45,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	http.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(authorize -> authorize
-			.requestMatchers("/registration").permitAll()
+			.requestMatchers("/registration", "/auth/login").permitAll()
 			.anyRequest().permitAll()
 	)
 		.formLogin(formLogin -> formLogin
 			.defaultSuccessUrl("/", true)
 	)
+//		.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	
 

@@ -20,10 +20,7 @@ public class PersonController {
 	this.personService = personService;
     }
     
-    @GetMapping("/user/{id}")
-    public String userPage(@PathVariable("id") int id) {
-	return null;
-    }
+    
     
     @GetMapping("/registration")
     public String registrationPage(@ModelAttribute("person") Person person) {

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users_url")
@@ -26,6 +27,9 @@ public class UsersUrl {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private Person person;
+    
+    @Transient
+    private Integer totalClicks;
 
     public UsersUrl() {}
     
@@ -65,6 +69,14 @@ public class UsersUrl {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public int getTotalClicks() {
+        return totalClicks;
+    }
+
+    public void setTotalClicks(Integer totalClicks) {
+        this.totalClicks = totalClicks;
     }
     
     

@@ -110,10 +110,9 @@ public class UrlService {
 	long urlId = url.get().getId();
 	
 	urlRepository.deleteById(urlId);
-	
-	
-	
     }
+    
+    
     
     
     

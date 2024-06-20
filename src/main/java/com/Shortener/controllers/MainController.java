@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.Shortener.dto.AuthDTO;
 import com.Shortener.models.Person;
 import com.Shortener.models.UsersUrl;
 import com.Shortener.security.PersonDetails;
@@ -41,24 +43,39 @@ public class MainController {
 	this.authCheck = authCheck;
     }
     
+    @GetMapping("/auth/login")
+    public String loginPage() {
+	return "loginPage";
+    }
+    
     @GetMapping()
     public String homePage(Model model) {
+	
 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	
 	
 	if (authCheck.check(authentication)) {
-	    
+	    System.out.println("auth OK");
 
 	    PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
 		
 		
 	    List<UsersUrl> urls = urlService.urlListForPerson(personDetails.getPerson().getId());
 	    
+	    for(UsersUrl url : urls) {
+		System.out.println(url.getLongUrl());
+	    }
+	    
+	    List<UsersUrl> urlList = redisService.getTotalClicks(urls);
+	    
+	    for(UsersUrl url : urlList) {
+		System.out.println(url.getTotalClicks());
+	    }
+	    
 		
-	    model.addAttribute("urlList", urls);
+	    model.addAttribute("urlList", urlList);
 	    
 	}
-	
 	return "homePage";
     }
     

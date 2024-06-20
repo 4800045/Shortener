@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import com.Shortener.models.ExpiredUrl;
 import com.Shortener.models.UsersUrl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -15,11 +18,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class RedisService {
     
     private final UrlService urlService;
-    private RedisTemplate<String, String> redisTemplate;
-
+    private final RedisTemplate redisTemplate;
     
     @Autowired
-    public RedisService(UrlService urlService, RedisTemplate<String, String> redisTemplate) {
+    public RedisService(UrlService urlService, RedisTemplate<String, Object> redisTemplate) {
 	this.urlService = urlService;
 	this.redisTemplate = redisTemplate;
     }
@@ -37,7 +39,14 @@ public class RedisService {
 	Optional<UsersUrl> usersUrl = urlService.findByShortUrl(longUrl);
 	
 	if (expiredUrl.isPresent()) {
-	    redisTemplate.opsForValue().set(expiredUrl.get().getShortUrl(), expiredUrl.get().getLongUrl(), timeout, TimeUnit.SECONDS);
+	    
+	    Map<String, Object> data = new HashMap<>();
+	    
+	    data.put("longUrl", longUrl);
+	    data.put("totalClicks", 0);
+	    
+	    redisTemplate.opsForHash().putAll(expiredUrl.get().getShortUrl(), data);
+	    redisTemplate.expire(expiredUrl.get().getShortUrl(), timeout, TimeUnit.SECONDS);
 	    
 	    urlService.deleteFromExpired(expiredUrl.get());
 	    
@@ -50,13 +59,26 @@ public class RedisService {
 	
 	String shortUrl = generateShortUrl(longUrl);
 		
-	redisTemplate.opsForValue().set(shortUrl, longUrl, timeout, TimeUnit.SECONDS);
+	Map<String, Object> urlData = new HashMap<>();
+	
+	urlData.put("longUrl", longUrl);
+	urlData.put("totalClicks", 0);
+	
+	redisTemplate.opsForHash().putAll(shortUrl, urlData);
+	redisTemplate.expire(shortUrl, timeout, TimeUnit.SECONDS);
+	
+	
 	
 	return shortUrl;
     }
     
-    public String getUrl(String url) {
-	return redisTemplate.opsForValue().get(url);
+    public Map<String, Object> getData(String shortUrl) {
+	return redisTemplate.opsForHash().entries(shortUrl);
+    }
+    
+    
+    public String getUrl(String shortUrl) {
+	return (String) getData(shortUrl).get("longUrl");
     }
     
     public void deleteFromRedis(String key) {
@@ -65,5 +87,14 @@ public class RedisService {
     }
     
     
-    
+    public List<UsersUrl> getTotalClicks(List<UsersUrl> urlList) {
+	
+	for (UsersUrl url : urlList) {
+	    Map<String, Object> data = getData(url.getShortUrl());
+	    url.setTotalClicks((Integer) data.get("totalClicks"));
+	}
+	
+	return urlList;
+	
+    }
 }

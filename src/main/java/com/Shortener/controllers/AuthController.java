@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +20,11 @@ import com.Shortener.models.Person;
 import com.Shortener.security.JWTUtil;
 import com.Shortener.service.PersonService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationManager authManager;
@@ -45,13 +51,17 @@ public class AuthController {
         
         return Map.of("jwt-token", token);
     }
+    
+    
+    
     		
     
     
     @PostMapping("/login")
     @ResponseBody
-    public Map<String, String> performLogin(@RequestBody AuthDTO authDTO) {
+    public String performLogin(@ModelAttribute AuthDTO authDTO, HttpServletResponse response) {
 	
+	System.out.println("We are in login method");
 	
 	UsernamePasswordAuthenticationToken authToken = 
 		new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword());
@@ -60,14 +70,24 @@ public class AuthController {
 	   authManager.authenticate(authToken);
 	}
 	catch (BadCredentialsException e) {
-	    return Map.of("message", "Incorrect credentials");
+	    return "Incorrect credentials"	;
 	}
+	
+	System.out.println(authDTO.getUsername());
 	
 	String token = jwtUtil.generateToken(authDTO.getUsername());
 	
+	Cookie cookie = new Cookie("JWT", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60); // Время жизни cookie в секундах
+        response.addCookie(cookie);
 	
 	
-	return Map.of("jwt-token", token);
+	System.out.println("Token after login method: " + token);
+	
+	
+	return token;
 	
 	
     }
