@@ -15,7 +15,9 @@
 		<br/>
 		
 		
-		<span th:text="'Total clicks' + ${url.totalClicks}"></span>
+		<span th:text="'Total clicks: ' + ${url.totalClicks}"></span>
+		<br/>
+		<span th:text="'Unique visitors: ' + ${url.uniqueVisitors}"></span>
 		<br/>
 		
 		<form th:method="POST" th:action="@{/deleteToken}">

@@ -30,6 +30,9 @@ public class RedisMessageSubscriber implements MessageListener{
 	
 	System.out.println("Key expired: " + expiredKey);
 	
+	redisTemplate.delete("TotalClicks:" + expiredKey);
+	redisTemplate.delete("UniqueVisitors:" + expiredKey);
+	
 	Optional<UsersUrl> usersUrl = urlService.findByShortUrl(expiredKey);
 	
 	urlService.saveToExpired(usersUrl.get());

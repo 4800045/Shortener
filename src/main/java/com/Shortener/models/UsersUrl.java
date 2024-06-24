@@ -29,7 +29,10 @@ public class UsersUrl {
     private Person person;
     
     @Transient
-    private Integer totalClicks;
+    private Long totalClicks;
+    
+    @Transient
+    private Long uniqueVisitors;
 
     public UsersUrl() {}
     
@@ -71,12 +74,20 @@ public class UsersUrl {
         this.person = person;
     }
 
-    public int getTotalClicks() {
+    public Long getTotalClicks() {
         return totalClicks;
     }
 
-    public void setTotalClicks(Integer totalClicks) {
+    public void setTotalClicks(Long totalClicks) {
         this.totalClicks = totalClicks;
+    }
+
+    public Long getUniqueVisitors() {
+        return uniqueVisitors;
+    }
+
+    public void setUniqueVisitors(Long uniqueVisitors) {
+        this.uniqueVisitors = uniqueVisitors;
     }
     
     

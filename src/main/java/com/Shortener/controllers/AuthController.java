@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.Shortener.dto.AuthDTO;
 import com.Shortener.models.Person;
@@ -52,9 +53,13 @@ public class AuthController {
         return Map.of("jwt-token", token);
     }
     
+    @GetMapping("/login")
+    public ModelAndView loginPage() {
+	ModelAndView view = new ModelAndView();
+	view.setViewName("loginPage");
+	return view;
+    }
     
-    
-    		
     
     
     @PostMapping("/login")

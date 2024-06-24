@@ -27,6 +27,8 @@ import com.Shortener.service.RedisService;
 import com.Shortener.service.UrlService;
 import com.Shortener.util.AuthCheck;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class MainController {
 
@@ -43,10 +45,6 @@ public class MainController {
 	this.authCheck = authCheck;
     }
     
-    @GetMapping("/auth/login")
-    public String loginPage() {
-	return "loginPage";
-    }
     
     @GetMapping()
     public String homePage(Model model) {
@@ -60,16 +58,11 @@ public class MainController {
 	    PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
 		
 		
-	    List<UsersUrl> urls = urlService.urlListForPerson(personDetails.getPerson().getId());
-	    
-	    for(UsersUrl url : urls) {
-		System.out.println(url.getLongUrl());
-	    }
-	    
-	    List<UsersUrl> urlList = redisService.getTotalClicks(urls);
+	    List<UsersUrl> urlList = urlService.urlListForPerson(personDetails.getPerson().getId());
 	    
 	    for(UsersUrl url : urlList) {
-		System.out.println(url.getTotalClicks());
+		url.setTotalClicks(redisService.getTotalClicks(url.getShortUrl()));
+		url.setUniqueVisitors(redisService.getUniqueVisitorsCount(url.getShortUrl()));
 	    }
 	    
 		
@@ -106,8 +99,11 @@ public class MainController {
     }
     
     @GetMapping("/r/{shortUrl}")
-    public RedirectView redirectToLongUrl(@PathVariable("shortUrl") String shortUrl) {
+    public RedirectView redirectToLongUrl(@PathVariable("shortUrl") String shortUrl, HttpServletRequest request) {
 	String longUrl = redisService.getUrl(shortUrl);
+	
+	redisService.totalClicksInc(shortUrl);
+	redisService.recordVisit(request, shortUrl);
 	
 	return new RedirectView(longUrl);
     }
